@@ -9,6 +9,7 @@
 #include "carla/client/Map.h"
 #include "carla/client/Junction.h"
 #include "carla/client/Landmark.h"
+#include "carla/road/Road.h"
 
 #include <unordered_set>
 
@@ -250,6 +251,22 @@ namespace client {
       }
     }
     return result;
+  }
+
+  double Waypoint::GetCurvature() {
+    double s = _waypoint.s;
+    auto road = _parent->GetMap().GetLane(_waypoint).GetRoad();
+    double curvature = road->GetCurvatureAt(s);
+
+    return curvature;
+  }
+
+  double Waypoint::GetCurvatureChange() {
+    double s = _waypoint.s;
+    auto road = _parent->GetMap().GetLane(_waypoint).GetRoad();
+    double curvature_change = road->GetCurvatureChangeAt(s);
+
+    return curvature_change;
   }
 
 } // namespace client

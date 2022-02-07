@@ -67,7 +67,7 @@ namespace element {
   }
 
   DirectedPoint GeometrySpiral::PosFromDist(double dist) const {
-    dist = geom::Math::Clamp(dist, 0.0, _length);
+    dist = geom::Math::Clamp(dist, 0.0, _length); //ToDo: Does this make sense?
     DEBUG_ASSERT(_length > 0.0);
     DirectedPoint p(_start_position, _heading);
 
@@ -99,6 +99,28 @@ namespace element {
     return p;
   }
 
+  double GeometrySpiral::CurvatureFromDist(double dist) const {
+    dist = geom::Math::Clamp(dist, 0.0, std::numeric_limits<double>::max());
+    DEBUG_ASSERT(_length > 0.0);
+    const double curve_end = (_curve_end);
+    const double curve_start = (_curve_start);
+    const double curve_dot = (curve_end - curve_start) / (_length);
+
+    double curvature = curve_start + curve_dot * (dist - _start_position_offset);
+
+    return curvature;
+  }
+
+  double GeometrySpiral::CurvatureChangeFromDist(double dist) const {
+
+    const double curve_end = (_curve_end);
+    const double curve_start = (_curve_start);
+    const double curve_dot = (curve_end - curve_start) / (_length);
+
+    return curve_dot + 0.0 * dist;
+  }
+
+
   /// @todo
   std::pair<float, float> GeometrySpiral::DistanceTo(const geom::Location &location) const {
     // Not analytic, discretize and find nearest point
@@ -123,6 +145,16 @@ namespace element {
     p.location.x += pos.x;
     p.location.y += pos.y;
     return p;
+  }
+
+  double GeometryPoly3::CurvatureFromDist(double dist) const {
+    double curvature = 2.0 * _c + 6.0 * _d * dist;
+    return curvature;
+  }
+
+  double GeometryPoly3::CurvatureChangeFromDist(double dist) const {
+    double curvature_change = 6.0 * _d + 0.0 * dist;
+    return curvature_change;
   }
 
   std::pair<float, float> GeometryPoly3::DistanceTo(const geom::Location & /*p*/) const {
@@ -182,6 +214,18 @@ namespace element {
     p.location.y += pos.y;
     return p;
   }
+
+  double GeometryParamPoly3::CurvatureFromDist(double dist) const {
+    double p = (dist-_start_position_offset)/_length;
+
+    double sigma1 = 3.0 * _dU * p * p + 2.0 * _cU * p + _bU;
+    double sigma2 = 3.0 * _dV * p * p + 2.0 * _cV * p + _bV;
+    double sigma3 = sigma1 * sigma1 + sigma2 * sigma2;
+    double curvature = (sigma1 * (2.0 * _cV + 6.0 * _dV * p) - sigma2 * (2.0 * _cU + 6.0 * _dU * p)) / (sigma3 * sqrt(sigma3));
+
+    return curvature;
+  }
+
   std::pair<float, float> GeometryParamPoly3::DistanceTo(const geom::Location &) const {
     // No analytical expression (Newton-Raphson?/point search)
     // throw_exception(std::runtime_error("not implemented"));

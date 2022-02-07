@@ -90,6 +90,10 @@ namespace road {
     /// - @ param s distance regarding the road to compute the point
     element::DirectedPoint GetDirectedPointInNoLaneOffset(const double s) const;
 
+    double GetCurvatureAt(const double s) const;
+
+    double GetCurvatureChangeAt(const double s) const;
+
     /// Returns a pair containing:
     /// - @b first:  distance to the nearest point on the center in
     ///              this road segment from the begining of it (s).

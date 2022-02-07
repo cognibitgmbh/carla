@@ -213,6 +213,24 @@ namespace road {
     return p;
   }
 
+  double Road::GetCurvatureAt(const double s) const {
+    const auto clamped_s = geom::Math::Clamp(s, 0.0, _length);
+    const auto geometry = _info.GetInfo<element::RoadInfoGeometry>(clamped_s);
+
+    double curvature = geometry->GetGeometry().CurvatureFromDist(clamped_s);
+
+    return curvature;
+  }
+
+  double Road::GetCurvatureChangeAt(const double s) const {
+    const auto clamped_s = geom::Math::Clamp(s, 0.0, _length);
+    const auto geometry = _info.GetInfo<element::RoadInfoGeometry>(clamped_s);
+
+    double curvature_change = geometry->GetGeometry().CurvatureChangeFromDist(clamped_s);
+
+    return curvature_change;
+  }
+
   const std::pair<double, double> Road::GetNearestPoint(const geom::Location &loc) const {
     std::pair<double, double> last = { 0.0, std::numeric_limits<double>::max() };
 
