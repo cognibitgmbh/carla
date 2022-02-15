@@ -25,7 +25,7 @@ AProceduralMeshActor::AProceduralMeshActor()
   RootComponent = MeshComponent;
 
   // Find/Load road material
-  FString MaterialPath(TEXT("Material'/Game/Carla/Static/GenericMaterials/Asphalt/M_Asphalt1.M_Asphalt1'"));
+  FString MaterialPath(TEXT("Material'/Game/Carla/Static/GenericMaterials/Asphalt/Old/M_Asphalt.M_Asphalt'"));
   static ConstructorHelpers::FObjectFinder<UMaterial> RoadMaterialAsset(*MaterialPath);
   if (RoadMaterialAsset.Succeeded()) {
     RoadMaterial = (UMaterial*) RoadMaterialAsset.Object;
