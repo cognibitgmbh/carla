@@ -70,6 +70,10 @@ namespace element {
 
     virtual DirectedPoint PosFromDist(double dist) const = 0;
 
+    virtual double CurvatureFromDist(double dist) const = 0;
+
+    virtual double CurvatureChangeFromDist(double dist) const = 0;
+
     virtual std::pair<float, float> DistanceTo(const geom::Location &p) const = 0;
 
   protected:
@@ -122,6 +126,16 @@ namespace element {
           PosFromDist(_length).location);
     }
 
+    double CurvatureFromDist(double dist) const override {
+      double curvature = 0.0 * dist;
+      return curvature;
+    }
+
+    double CurvatureChangeFromDist(double dist) const override {
+      double curvature_change = 0.0 * dist;
+      return curvature_change;
+    }
+
   };
 
   class GeometryArc final : public Geometry {
@@ -156,6 +170,16 @@ namespace element {
       return _curvature;
     }
 
+    double CurvatureFromDist(double dist) const override {
+      double curvature = _curvature + 0.0 * dist;
+      return curvature;
+    }
+
+    double CurvatureChangeFromDist(double dist) const override {
+      double curvature_change = 0.0 * dist;
+      return curvature_change;
+    }
+
   private:
 
     double _curvature;
@@ -184,6 +208,10 @@ namespace element {
     }
 
     DirectedPoint PosFromDist(double dist) const override;
+
+    double CurvatureFromDist(double dist) const override;
+
+    double CurvatureChangeFromDist(double dist) const override;
 
     std::pair<float, float> DistanceTo(const geom::Location &) const override;
 
@@ -228,6 +256,10 @@ namespace element {
     }
 
     DirectedPoint PosFromDist(double dist) const override;
+
+    double CurvatureFromDist(double dist) const override;
+
+    double CurvatureChangeFromDist(double dist) const override;
 
     std::pair<float, float> DistanceTo(const geom::Location &) const override;
 
@@ -310,6 +342,13 @@ namespace element {
     }
 
     DirectedPoint PosFromDist(double dist) const override;
+
+    double CurvatureFromDist(double dist) const override;
+
+    double CurvatureChangeFromDist(double dist) const override {
+      double curvature_change = 0.0 * dist;
+      return curvature_change;
+    }
 
     std::pair<float, float> DistanceTo(const geom::Location &) const override;
 
