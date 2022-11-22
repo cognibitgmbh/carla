@@ -66,6 +66,22 @@ namespace element {
     static_cast<float>(y * cos_a + x * sin_a));
   }
 
+  double curvatureFromThreePoints(DirectedPoint p1, DirectedPoint p2, DirectedPoint p3) {
+      // cf https://de.wikipedia.org/wiki/Kreis#Kr%C3%BCmmung
+      auto z1 = p1.location.x * p1.location.x + p1.location.y * p1.location.y;
+      auto z2 = p2.location.x * p2.location.x + p2.location.y * p2.location.y;
+      auto z3 = p3.location.x * p3.location.x + p3.location.y * p3.location.y;
+
+      auto a = (p2.location.y * z3 - p3.location.y * z2) - p1.location.y * (z3 - z2) + z1 * (p3.location.y - p2.location.y);
+      auto b = p1.location.x * (z3 - z2) - (p2.location.x * z3 - p3.location.x * z2) + z1 * (p2.location.x - p3.location.x);
+      auto c = p1.location.x * (p2.location.y - p3.location.y) - p1.location.y * (p2.location.x - p3.location.x) + (p2.location.x * p3.location.y - p3.location.x * p2.location.y);
+      auto d = p1.location.x * (p2.location.y * z3 - p3.location.y * z2) - p1.location.y * (p2.location.x * z3 - p3.location.x * z2) + z1 * (p2.location.x * p3.location.y - p3.location.x * p2.location.y);
+
+      auto r = sqrt((a * a + b * b + 4 * c * d) / (4 * c * c));
+
+      return 1 / r;
+  }
+
   DirectedPoint GeometrySpiral::PosFromDist(double dist) const {
     dist = geom::Math::Clamp(dist, 0.0, _length);
     DEBUG_ASSERT(_length > 0.0);
@@ -148,8 +164,12 @@ namespace element {
   }
 
   double GeometryPoly3::CurvatureFromDist(double dist) const {
-    double curvature = 2.0 * _c + 6.0 * _d * dist;
-    return curvature;
+#define EPSILON_POS_CURVATURE 0.0001
+      auto p1 = this->PosFromDist(dist - EPSILON_POS_CURVATURE);
+      auto p2 = this->PosFromDist(dist);
+      auto p3 = this->PosFromDist(dist + EPSILON_POS_CURVATURE);
+
+      return curvatureFromThreePoints(p1, p2, p3);
   }
 
   double GeometryPoly3::CurvatureChangeFromDist(double dist) const {
