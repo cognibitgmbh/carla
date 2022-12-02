@@ -236,13 +236,11 @@ namespace element {
   }
 
   double GeometryParamPoly3::CurvatureFromDist(double dist) const {
-    double p = (dist-_start_position_offset)/_length;
+    auto p1 = this->PosFromDist(dist - EPSILON_POS_CURVATURE);
+    auto p2 = this->PosFromDist(dist);
+    auto p3 = this->PosFromDist(dist + EPSILON_POS_CURVATURE);
 
-    double sigma1 = 3.0 * _dU * p * p + 2.0 * _cU * p + _bU;
-    double sigma2 = 3.0 * _dV * p * p + 2.0 * _cV * p + _bV;
-    double sigma3 = sigma1 * sigma1 + sigma2 * sigma2;
-    double curvature = (sigma1 * (2.0 * _cV + 6.0 * _dV * p) - sigma2 * (2.0 * _cU + 6.0 * _dU * p)) / (sigma3 * sqrt(sigma3));
-
+    auto curvature = curvatureFromThreePoints(p1, p2, p3);
     return curvature;
   }
 
